@@ -1,0 +1,11 @@
+# 교인 개인정보가 포함된 로컬 전용 파일 — GitHub에 올리지 않습니다.
+members-data.js
+firestore.rules
+
+# 작업용·검증용 파일
+.spreadsheet-analysis/
+tmp/
+outputs/**/*.png
+outputs/**/*.xlsx
+*.inspect.ndjson
+.DS_Store

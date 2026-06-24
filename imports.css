@@ -1,0 +1,127 @@
+.import-attendance {
+  background: #eef5f7;
+  border: 1px solid #d5e5ea;
+  border-radius: 12px;
+  padding: 15px;
+  display: grid;
+  gap: 8px;
+}
+.import-attendance strong { font-size: 13px; }
+.import-attendance p { margin: 0 !important; }
+.attendance-import { background: var(--navy); color: #fff; border-color: var(--navy); }
+#attendanceImportResult { color: var(--green); font-weight: 750; line-height: 1.5; }
+.field-hint { color: var(--muted); font-size: 10px; font-weight: 500; }
+.field-hint.matched { color: var(--green); font-weight: 750; }
+.field-hint.unmatched { color: var(--coral); font-weight: 750; }
+.autocomplete-wrap { position: relative; }
+.autocomplete-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 80;
+  max-height: 238px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #cfdde3;
+  border-radius: 10px;
+  box-shadow: 0 14px 32px rgba(23,50,77,.16);
+  padding: 5px;
+}
+.autocomplete-option { width: 100%; border: 0; border-radius: 7px; background: #fff; padding: 9px 10px; text-align: left; cursor: pointer; }
+.autocomplete-option:hover,.autocomplete-option:focus { background: #eef5f7; outline: 0; }
+.autocomplete-option strong,.autocomplete-option small { display: block; }
+.autocomplete-option strong { font-size: 12px; color: var(--ink); }
+.autocomplete-option small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+.autocomplete-empty { padding: 12px; color: var(--muted); font-size: 11px; text-align: center; }
+.receipt-controls input {
+  min-width: 230px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fbfcfc;
+  padding: 11px 12px;
+  outline: 0;
+  color: var(--ink);
+}
+.receipt-controls input:focus { border-color: #79a8bf; box-shadow: 0 0 0 3px rgba(40,119,168,.09); }
+.representative-line { position: relative; min-height: 74px; display: flex; align-items: center; }
+.representative-line b { flex: 0 0 180px; }
+.official-seal {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  margin-left: -8px;
+  transform: rotate(-1.5deg);
+  opacity: .92;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+@media print {
+  .official-seal { width: 78px; height: 78px; opacity: .9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+.brand .logo-mark {
+  width: 62px;
+  height: 52px;
+  flex: 0 0 62px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 14px;
+}
+.brand .logo-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+/* 화면 가독성 개선 */
+@media screen {
+  body { font-size: 16px; }
+  .brand strong { font-size: 20px; }
+  .brand span { font-size: 13px; }
+  .nav-item { font-size: 15px; padding-top: 14px; padding-bottom: 14px; }
+  .church-mini { font-size: 12.5px; line-height: 1.6; }
+  .topbar h1 { font-size: 28px; }
+  .eyebrow { font-size: 11px; }
+  .welcome p { font-size: 14px; }
+  .welcome h2 { font-size: 23px; }
+  .date-chip,.year-control { font-size: 14px; }
+  .metric span,.metric small { font-size: 13px; }
+  .metric strong { font-size: 27px; }
+  .panel-head h3 { font-size: 19px; }
+  .legend,.text-button { font-size: 13px; }
+  table { font-size: 14px; }
+  th,td { padding: 13px 11px; }
+  .badge { font-size: 11px; padding: 5px 9px; }
+  .form-grid label { font-size: 13px; }
+  .form-grid input,.form-grid select,.filter-row input,.panel-head>input,.receipt-controls select,.receipt-controls input { font-size: 14px; padding: 12px 13px; }
+  .primary,.ghost,.danger,.file-button { font-size: 14px; }
+  .primary.small,.ghost.small { font-size: 13px; }
+  .field-hint,.privacy-note { font-size: 11.5px !important; }
+  .member-card h4 { font-size: 16px; }
+  .member-card p,.member-total { font-size: 13px; }
+  .report-fund-card span { font-size: 12px; }
+  .report-fund-card strong { font-size: 21px; }
+  .report-fund-card small,.muted { font-size: 13px; }
+  .category-columns h4 { font-size: 14px; }
+  .chip { font-size: 12px; padding: 7px 11px; }
+  .backup-box p { font-size: 13px; }
+  .autocomplete-option strong { font-size: 14px; }
+  .autocomplete-option small,.autocomplete-empty { font-size: 12px; }
+}
+.file-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap; }
+.donation-tools { flex-wrap: wrap; justify-content: flex-end; }
+.donation-tools > input { min-width: 170px; flex: 1 1 170px; }
+.import-status { margin: -4px 0 16px; padding: 12px 14px; border-radius: 10px; background: #eef5f7; color: var(--navy); font-size: 13px; line-height: 1.55; white-space: pre-line; }
+.import-status.error { background: #fff0ec; color: #a84531; }
+.cloud-status { width: 100%; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: #fff; border-radius: 9px; padding: 9px 10px; margin-bottom: 10px; cursor: pointer; font-size: 11px; text-align: left; }
+.cloud-status:hover { background: rgba(255,255,255,.14); }
+.cloud-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #d79a42; }
+.cloud-dot.online { background: #6fd49a; box-shadow: 0 0 0 3px rgba(111,212,154,.16); }
+.cloud-dot.syncing { background: #f1c56e; animation: pulse 1s infinite; }
+.cloud-dot.error { background: #ef8f7a; }
+@keyframes pulse { 50% { opacity: .35; } }
+.cloud-sync-panel { margin-bottom: 18px; }
+.cloud-setup-grid { display: grid; grid-template-columns: minmax(0,1.5fr) minmax(260px,.7fr); gap: 26px; }
+.cloud-actions { border-left: 1px solid var(--line); padding-left: 24px; display: grid; align-content: start; gap: 10px; }
+.cloud-actions p { margin: 0 0 5px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.trusted-device { display: flex !important; grid-template-columns: auto 1fr !important; align-items: center; }
+.trusted-device input { width: auto !important; }
+.sync-state-badge { border-radius: 20px; padding: 6px 10px; background: #eef3f4; color: var(--muted); font-size: 11px; font-weight: 750; }
+.setup-guide-link { display: inline-block; margin-top: 5px; text-decoration: none; }
+@media (max-width: 1250px) { .cloud-setup-grid { grid-template-columns: 1fr; } .cloud-actions { border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; } }

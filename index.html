@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>열방교회 재정관리</title>
+  <link rel="icon" href="assets/yeolbang-church-logo-original.jpg" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="imports.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark logo-mark"><img src="assets/yeolbang-church-logo-original.jpg" alt="열방교회 로고" /></div>
+        <div><strong>열방교회</strong><span>재정관리</span></div>
+      </div>
+      <nav id="mainNav">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span> 대시보드</button>
+        <button class="nav-item" data-view="donations"><span>＋</span> 헌금 입력</button>
+        <button class="nav-item" data-view="expenses"><span>−</span> 지출 입력</button>
+        <button class="nav-item" data-view="members"><span>♙</span> 교인 관리</button>
+        <button class="nav-item" data-view="reports"><span>▥</span> 회계 보고</button>
+        <button class="nav-item" data-view="receipts"><span>▤</span> 기부금영수증</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> 설정 · 백업</button>
+      </nav>
+      <div class="church-mini">
+        <button class="cloud-status" id="cloudStatusButton" data-go="settings"><span class="cloud-dot" id="cloudStatusDot"></span><span id="cloudStatusLabel">이 기기에 저장 중</span></button>
+        <strong>대한예수교장로회 통합</strong>
+        <strong>열방교회</strong>
+        <span>064-767-9090</span>
+        <span>제주특별자치도 서귀포시 중산간동로 8091</span>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><p class="eyebrow">YOLBANG CHURCH</p><h1 id="pageTitle">재정 대시보드</h1></div>
+        <div class="top-actions"><label class="year-control">회계연도 <select id="globalYear"></select></label><button class="primary small" data-go="donations">헌금 입력</button></div>
+      </header>
+
+      <section class="view active" id="dashboardView">
+        <div class="welcome"><div><p>평안하세요</p><h2><span id="welcomeYear"></span>년 재정 현황을 한눈에 확인하세요.</h2></div><div class="date-chip" id="todayText"></div></div>
+        <div class="metric-grid">
+          <article class="metric income"><span>총수입</span><strong id="dashIncome">0원</strong><small id="dashIncomeCompare">전년 대비 —</small></article>
+          <article class="metric expense"><span>총지출</span><strong id="dashExpense">0원</strong><small id="dashExpenseCompare">전년 대비 —</small></article>
+          <article class="metric balance"><span>잔액</span><strong id="dashBalance">0원</strong><small>수입 − 지출</small></article>
+          <article class="metric people"><span>헌금 참여</span><strong id="dashDonors">0명</strong><small id="dashCount">헌금 0건</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="panel wide"><div class="panel-head"><div><p class="eyebrow">월별 흐름</p><h3>수입과 지출</h3></div><div class="legend"><span class="dot blue"></span>수입 <span class="dot coral"></span>지출</div></div><div id="monthlyChart" class="bar-chart"></div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">회계별 현황</p><h3>잔액 구성</h3></div></div><div id="fundSummary" class="fund-list"></div></article>
+          <article class="panel wide"><div class="panel-head"><div><p class="eyebrow">최근 기록</p><h3>최근 거래</h3></div><button class="text-button" data-go="reports">전체 보고 보기 →</button></div><div class="table-wrap"><table><thead><tr><th>날짜</th><th>구분</th><th>내역</th><th>회계</th><th class="right">금액</th></tr></thead><tbody id="recentRows"></tbody></table></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="donationsView">
+        <div class="section-grid form-layout">
+          <article class="panel sticky-card"><div class="panel-head"><div><p class="eyebrow">INCOME</p><h3 id="donationFormTitle">헌금 기록 입력</h3></div></div>
+            <form id="donationForm" class="form-grid">
+              <input type="hidden" id="donationId" />
+              <label>헌금일<input type="date" id="donationDate" required /></label>
+              <label>헌금자 검색<div class="autocomplete-wrap"><input id="donationMemberSearch" placeholder="이름을 입력하세요" autocomplete="off" /><div id="donationMemberSuggestions" class="autocomplete-list hidden"></div></div><select id="donationMember" class="hidden" aria-hidden="true"><option value="">무기명 / 기타</option></select><small id="donationMemberHint" class="field-hint">이름 몇 글자를 입력하면 교인을 찾습니다.</small></label>
+              <label class="check-row"><input type="checkbox" id="donationAnonymous" /> 무기명 헌금으로 기록</label>
+              <label>헌금 항목<select id="donationCategory" required></select></label>
+              <label>회계 구분<select id="donationFund" required></select></label>
+              <label>금액<input type="number" id="donationAmount" min="1" step="1" placeholder="0" required /></label>
+              <label>납부 방법<select id="donationMethod"><option>현금</option><option>계좌이체</option><option>카드</option><option>기타</option></select></label>
+              <label class="full">메모<input type="text" id="donationMemo" placeholder="예: 6월 셋째 주" /></label>
+              <div class="form-actions full"><button type="button" class="ghost" id="donationCancel">초기화</button><button class="primary" type="submit">저장하기</button></div>
+            </form>
+          </article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">DONATION LEDGER</p><h3>헌금 기록</h3></div><div class="filter-row donation-tools"><input id="donationSearch" placeholder="이름·항목 검색" /><a id="donationTemplateLink" class="ghost small file-link" href="outputs/yeolbang-church/열방교회_헌금_일괄등록_양식.xlsx" download>엑셀 양식</a><label class="file-button small">엑셀 일괄등록<input type="file" id="importDonationXlsx" accept=".xlsx,.xls" /></label><button class="ghost small" id="exportDonationCsv">CSV 저장</button></div></div><div id="donationImportStatus" class="import-status hidden"></div><div class="table-wrap tall"><table><thead><tr><th>날짜</th><th>헌금자</th><th>항목</th><th>회계</th><th>방법</th><th class="right">금액</th><th></th></tr></thead><tbody id="donationRows"></tbody></table></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="expensesView">
+        <div class="section-grid form-layout">
+          <article class="panel sticky-card"><div class="panel-head"><div><p class="eyebrow">EXPENSE</p><h3 id="expenseFormTitle">지출 기록 입력</h3></div></div>
+            <form id="expenseForm" class="form-grid">
+              <input type="hidden" id="expenseId" />
+              <label>지출일<input type="date" id="expenseDate" required /></label>
+              <label>지출 항목<select id="expenseCategory" required></select></label>
+              <label>세부 내역<input type="text" id="expenseDetail" placeholder="예: 전기요금" required /></label>
+              <label>회계 구분<select id="expenseFund" required></select></label>
+              <label>지급처<input type="text" id="expensePayee" placeholder="지급처 또는 수령인" /></label>
+              <label>금액<input type="number" id="expenseAmount" min="1" step="1" placeholder="0" required /></label>
+              <label>지급 방법<select id="expenseMethod"><option>현금</option><option>계좌이체</option><option>카드</option><option>기타</option></select></label>
+              <label class="full">메모<input type="text" id="expenseMemo" placeholder="결의서·증빙 메모" /></label>
+              <div class="form-actions full"><button type="button" class="ghost" id="expenseCancel">초기화</button><button class="primary" type="submit">저장하기</button></div>
+            </form>
+          </article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">EXPENSE LEDGER</p><h3>지출 기록</h3></div><div class="filter-row"><input id="expenseSearch" placeholder="항목·지급처 검색" /><button class="ghost small" id="exportExpenseCsv">CSV 저장</button></div></div><div class="table-wrap tall"><table><thead><tr><th>날짜</th><th>항목</th><th>세부 내역</th><th>회계</th><th>지급처</th><th class="right">금액</th><th></th></tr></thead><tbody id="expenseRows"></tbody></table></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="membersView">
+        <div class="section-grid form-layout">
+          <article class="panel sticky-card"><div class="panel-head"><div><p class="eyebrow">MEMBERS</p><h3 id="memberFormTitle">교인 등록</h3></div></div>
+            <form id="memberForm" class="form-grid">
+              <input type="hidden" id="memberId" />
+              <label>이름<input id="memberName" required /></label>
+              <label>휴대폰 번호<input id="memberPhone" placeholder="010-0000-0000" inputmode="numeric" maxlength="13" /></label>
+              <label class="full">주소<input id="memberAddress" placeholder="기부금영수증 표시 주소" /></label>
+              <label class="full">주민등록번호 / 사업자번호<input id="memberTaxId" placeholder="숫자만 입력해도 자동으로 구분됩니다" inputmode="numeric" maxlength="14" autocomplete="off" /></label>
+              <label>세대 / 그룹<input id="memberGroup" placeholder="예: 1교구" /></label>
+              <label>상태<select id="memberStatus"><option>재적</option><option>새가족</option><option>이명</option><option>기타</option></select></label>
+              <p class="privacy-note full">민감한 식별정보는 이 기기의 브라우저에만 저장됩니다. 공용 컴퓨터에서는 입력하지 마세요.</p>
+              <div class="form-actions full"><button type="button" class="ghost" id="memberCancel">초기화</button><button class="primary" type="submit">저장하기</button></div>
+            </form>
+          </article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">DIRECTORY</p><h3>교인 명단</h3></div><input id="memberSearch" placeholder="이름·연락처 검색" /></div><div id="memberCards" class="member-cards"></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="reportsView">
+        <div class="report-toolbar"><div><p class="eyebrow">FINANCIAL REPORT</p><h2><span class="reportYearText"></span>년 회계 보고</h2></div><div class="filter-row"><button class="ghost" id="printReport">보고서 인쇄</button><button class="primary" id="exportReportCsv">전체 거래 CSV</button></div></div>
+        <div class="metric-grid report-metrics"><article class="metric income"><span>총수입</span><strong id="reportIncome">0원</strong><small id="reportIncomePrev">전년도 0원</small></article><article class="metric expense"><span>총지출</span><strong id="reportExpense">0원</strong><small id="reportExpensePrev">전년도 0원</small></article><article class="metric balance"><span>잔액</span><strong id="reportBalance">0원</strong><small>당해 연도 순잔액</small></article></div>
+        <div id="reportFundCards" class="report-funds"></div>
+        <div class="section-grid equal"><article class="panel"><div class="panel-head"><div><p class="eyebrow">수입부</p><h3>헌금 항목별 현황</h3></div></div><div class="table-wrap"><table><thead><tr><th>항목</th><th class="right current-year-head">당해 연도</th><th class="right previous-year-head">전년도</th><th class="right">증감</th></tr></thead><tbody id="incomeReportRows"></tbody></table></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">지출부</p><h3>지출 항목별 현황</h3></div></div><div class="table-wrap"><table><thead><tr><th>항목</th><th class="right current-year-head">당해 연도</th><th class="right previous-year-head">전년도</th><th class="right">증감</th></tr></thead><tbody id="expenseReportRows"></tbody></table></div></article></div>
+      </section>
+
+      <section class="view" id="receiptsView">
+        <div class="receipt-builder no-print"><div><div><p class="eyebrow">YEAR-END TAX</p><h2>기부금영수증 발급</h2><p class="muted">교인 이름과 연도를 선택하면 해당 기간의 개인 헌금만 자동 합산됩니다.</p></div><div class="receipt-controls"><label>귀속연도<select id="receiptYear"></select></label><label>기부자 이름<div class="autocomplete-wrap"><input id="receiptMemberSearch" placeholder="이름을 입력하세요" autocomplete="off" /><div id="receiptMemberSuggestions" class="autocomplete-list hidden"></div></div><select id="receiptMember" class="hidden" aria-hidden="true"><option value="">기부자 선택</option></select><small id="receiptMemberHint" class="field-hint">이름 몇 글자를 입력하면 교인을 찾습니다.</small></label><button class="primary" id="buildReceipt">영수증 만들기</button></div></div></div>
+        <div id="receiptEmpty" class="empty-state"><div>▤</div><h3>발급할 기부자를 선택해 주세요</h3><p>무기명 헌금은 개인 기부금영수증에 포함되지 않습니다.</p></div>
+        <div id="receiptArea" class="receipt-paper hidden">
+          <div class="receipt-actions no-print"><span id="receiptWarning" class="warning"></span><button class="primary" id="printReceipt">인쇄 / PDF 저장</button></div>
+          <div class="receipt-document">
+            <div class="receipt-top"><span>일련번호 <b id="receiptNumber"></b></span><h2>기 부 금 영 수 증</h2><span></span></div>
+            <table class="receipt-table"><tr><th rowspan="4">기부자</th><th>성명</th><td id="receiptDonorName"></td><th>주민등록번호<br />(사업자등록번호)</th><td id="receiptDonorTaxId"></td></tr><tr><th>주소</th><td colspan="3" id="receiptDonorAddress"></td></tr></table>
+            <h3>기부금 내역</h3>
+            <table class="receipt-table"><thead><tr><th>기부일자</th><th>기부금 구분</th><th>내용</th><th>금액</th></tr></thead><tbody id="receiptDonationRows"></tbody><tfoot><tr><th colspan="3">합계</th><td id="receiptTotal"></td></tr></tfoot></table>
+            <p class="receipt-declaration">위와 같이 기부금을 기부하였음을 증명합니다.</p>
+            <p class="receipt-date" id="receiptIssueDate"></p>
+            <div class="issuer"><p><b>기부금 단체명</b> <span id="receiptChurchName"></span></p><p><b>고유번호 / 사업자등록번호</b> <span id="receiptChurchTaxId"></span></p><p><b>소재지</b> <span id="receiptChurchAddress"></span></p><p class="representative-line"><b>대표자</b> <span id="receiptRepresentative"></span><img class="official-seal" src="assets/yeolbang-church-seal.png" alt="열방교회 직인" /></p></div>
+            <div class="receipt-note">※ 실제 제출 전 단체 정보, 기부금 구분 및 발급 요건을 담당 세무 전문가에게 확인해 주세요.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <article class="panel cloud-sync-panel"><div class="panel-head"><div><p class="eyebrow">ONLINE · OFFLINE SYNC</p><h3>Firebase 온라인 동기화</h3></div><span class="sync-state-badge" id="firebaseStatus">설정되지 않음</span></div><div class="cloud-setup-grid"><form id="firebaseSettingsForm" class="form-grid"><label>Firebase Project ID<input id="firebaseProjectId" placeholder="예: allnations-church" /></label><label>App ID<input id="firebaseAppId" placeholder="1:000000000:web:..." /></label><label class="full">API Key<input id="firebaseApiKey" placeholder="AIza..." autocomplete="off" /></label><label class="full">Auth Domain<input id="firebaseAuthDomain" placeholder="프로젝트ID.firebaseapp.com" /></label><label>교회 데이터 ID<input id="firebaseChurchId" value="yeolbang" /></label><label class="trusted-device"><input type="checkbox" id="firebaseTrustedDevice" /> 신뢰할 수 있는 교회 기기</label><p class="privacy-note full">오프라인 동기화는 이 기기에 재정자료를 보관합니다. 교회 전용 또는 개인 기기에서만 체크하세요.</p><div class="form-actions full"><button type="submit" class="ghost">Firebase 설정 저장</button></div></form><div class="cloud-actions"><p id="firebaseUserInfo">Google 로그인이 필요합니다.</p><button class="primary" id="firebaseLogin" type="button">Google 계정으로 로그인</button><button class="ghost" id="firebaseSyncNow" type="button">지금 동기화</button><button class="ghost" id="firebaseLogout" type="button">로그아웃</button><a href="FIREBASE_GITHUB_SETUP.md" class="text-button setup-guide-link" target="_blank">Firebase·GitHub 설정 안내 열기 →</a></div></div></article>
+        <div class="section-grid equal"><article class="panel"><div class="panel-head"><div><p class="eyebrow">CHURCH PROFILE</p><h3>교회 · 영수증 정보</h3></div></div><form id="settingsForm" class="form-grid"><label>교회명<input id="settingName" required /></label><label>소속 교단<input id="settingDenomination" /></label><label class="full">주소<input id="settingAddress" /></label><label>전화번호<input id="settingPhone" /></label><label>대표자<input id="settingRepresentative" placeholder="담임목사 성명" /></label><label class="full">고유번호 / 사업자등록번호<input id="settingTaxId" placeholder="기부금영수증 발급 전 입력" /></label><label class="full">기부금 구분<input id="settingDonationType" value="종교단체 기부금" /></label><div class="form-actions full"><button class="primary" type="submit">정보 저장</button></div></form></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">DATA</p><h3>데이터 가져오기 · 백업</h3></div></div><div class="backup-box"><div class="import-attendance"><strong>출석부 교인 명부 가져오기</strong><p>출석부의 ‘데이터 → JSON 백업’ 파일을 선택하면 교인명과 네트·G12·144셀·1728셀 소속을 등록합니다.</p><label class="file-button attendance-import">출석부 JSON 선택<input type="file" id="importAttendance" accept="application/json" /></label><small id="attendanceImportResult"></small></div><hr /><p>모든 교인, 헌금, 지출 기록을 하나의 백업 파일로 보관할 수 있습니다.</p><button class="primary" id="exportBackup">재정 백업 파일 저장</button><label class="file-button">재정 백업 파일 불러오기<input type="file" id="importBackup" accept="application/json" /></label><hr /><p class="danger-text">초기화하면 현재 기기에 저장된 모든 자료가 삭제됩니다.</p><button class="danger" id="resetData">모든 데이터 초기화</button></div></article></div>
+        <article class="panel category-panel"><div class="panel-head"><div><p class="eyebrow">ACCOUNT CATEGORIES</p><h3>등록된 회계 항목</h3></div></div><div class="category-columns"><div><h4>헌금 항목</h4><div id="incomeCategoryChips" class="chips"></div></div><div><h4>지출 항목</h4><div id="expenseCategoryChips" class="chips"></div></div><div><h4>회계 구분</h4><div id="fundChips" class="chips"></div></div></div></article>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="members-loader.js"></script>
+  <script src="app.js"></script>
+  <script type="module" src="firebase-sync.js"></script>
+</body>
+</html>
