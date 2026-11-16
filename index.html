@@ -7,6 +7,7 @@
   <link rel="icon" href="assets/yeolbang-church-logo-original.jpg" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="imports.css" />
+  <link rel="stylesheet" href="ext.css" />
   <link rel="manifest" href="manifest.webmanifest" />
 </head>
 <body>
@@ -14,7 +15,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark logo-mark"><img src="assets/yeolbang-church-logo-original.jpg" alt="열방교회 로고" /></div>
-        <div><strong>열방교회</strong><span>재정관리</span></div>
+        <div><strong>열방교회</strong><span>재정 · 교적 관리</span></div>
       </div>
       <nav id="mainNav">
         <button class="nav-item active" data-view="dashboard"><span>⌂</span> 대시보드</button>
@@ -67,7 +68,8 @@
               <label>회계 구분<select id="donationFund" required></select></label>
               <label>금액<input type="number" id="donationAmount" min="1" step="1" placeholder="0" required /></label>
               <label>납부 방법<select id="donationMethod"><option>현금</option><option>계좌이체</option><option>카드</option><option>기타</option></select></label>
-              <label class="full">메모<input type="text" id="donationMemo" placeholder="예: 6월 셋째 주" /></label>
+              <label>예배 구분<select id="donationPart"><option value="">미지정</option></select></label>
+              <label>메모<input type="text" id="donationMemo" placeholder="예: 6월 셋째 주" /></label>
               <div class="form-actions full"><button type="button" class="ghost" id="donationCancel">초기화</button><button class="primary" type="submit">저장하기</button></div>
             </form>
           </article>
@@ -105,7 +107,18 @@
               <label class="full">주소<input id="memberAddress" placeholder="기부금영수증 표시 주소" /></label>
               <label class="full">주민등록번호 / 사업자번호<input id="memberTaxId" placeholder="숫자만 입력해도 자동으로 구분됩니다" inputmode="numeric" maxlength="14" autocomplete="off" /></label>
               <label>세대 / 그룹<input id="memberGroup" placeholder="예: 1교구" /></label>
-              <label>상태<select id="memberStatus"><option>재적</option><option>새가족</option><option>이명</option><option>기타</option></select></label>
+              <label>상태<select id="memberStatus"><option>재적</option><option>새가족</option><option>이명</option><option>제적</option><option>별세</option><option>기타</option></select></label>
+              <label>성별<select id="memberGender"><option value="">선택</option><option>남</option><option>여</option></select></label>
+              <label>직분<select id="memberPosition"><option value="">직분 선택</option></select></label>
+              <label>생년월일<input type="date" id="memberBirth" /></label>
+              <label class="check-row" style="grid-column:auto;align-self:end;padding-bottom:12px"><input type="checkbox" id="memberLunar" /> 음력 생일</label>
+              <label>세대(가족)<input id="memberFamily" placeholder="예: 홍길동 세대" /></label>
+              <label>교인번호<input id="memberNo" placeholder="바코드·출결용 번호" /></label>
+              <label>등록일<input type="date" id="memberRegistered" /></label>
+              <label>세례<select id="memberBaptism"><option value="">미입력</option><option>유아세례</option><option>세례</option><option>입교</option><option>학습</option></select></label>
+              <label>결혼기념일<input type="date" id="memberAnniversary" /></label>
+              <label>이메일<input type="email" id="memberEmail" /></label>
+              <label class="full">메모<input id="memberMemo" placeholder="특이사항" /></label>
               <p class="privacy-note full">민감한 식별정보는 이 기기의 브라우저에만 저장됩니다. 공용 컴퓨터에서는 입력하지 마세요.</p>
               <div class="form-actions full"><button type="button" class="ghost" id="memberCancel">초기화</button><button class="primary" type="submit">저장하기</button></div>
             </form>
@@ -151,7 +164,12 @@
   <script src="vendor/xlsx.full.min.js"></script>
   <script src="firebase-config.js"></script>
   <script src="members-loader.js"></script>
+  <datalist id="ybMembers"></datalist>
+  <div id="ybPrintArea"></div>
   <script src="app.js"></script>
+  <script src="ext-core.js"></script>
+  <script src="ext-finance.js"></script>
+  <script src="ext-church.js"></script>
   <script type="module" src="firebase-sync.js"></script>
 </body>
 </html>
