@@ -1,10 +1,14 @@
-const CACHE_NAME = "yolbang-finance-v3";
+const CACHE_NAME = "yolbang-finance-v4";
 const LOCAL_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./imports.css",
+  "./ext.css",
   "./app.js",
+  "./ext-core.js",
+  "./ext-finance.js",
+  "./ext-church.js",
   "./firebase-config.js",
   "./firebase-sync.js",
   "./members-loader.js",

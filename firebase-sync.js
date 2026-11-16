@@ -93,15 +93,42 @@ function documentRef(type, id) {
   return firestoreApi.doc(db, "churches", cleanId(config.churchId), type, String(id));
 }
 
+// 기본 자료(교인·헌금·지출)와 확장 자료(출결·심방 등)를 구분합니다.
+// 확장 자료는 Firestore 규칙이 아직 허용하지 않아도 기본 동기화가 멈추지 않도록 따로 처리합니다.
+const CORE_TYPES = ["members", "donations", "expenses"];
+const allTypes = () => (Array.isArray(window.YOLBANG_COLLECTIONS) ? window.YOLBANG_COLLECTIONS : CORE_TYPES);
+const blocked = new Set();
+const configRef = () => firestoreApi.doc(db, "churches", cleanId(config.churchId), "settings", "config");
+function setSyncedStatus() {
+  if (blocked.size) setStatus("동기화됨 · 새 메뉴는 규칙 추가 필요", "online");
+  else setStatus(navigator.onLine ? "온라인 동기화됨" : "오프라인 자료 사용 중", navigator.onLine ? "online" : "");
+}
+
 function startListeners() {
   unsubscribers.forEach((unsubscribe) => unsubscribe());
   unsubscribers = [];
   initialSnapshotsReady = false;
-  const waitingFor = new Set(["members", "donations", "expenses", "church"]);
+  blocked.clear();
+  const waitingFor = new Set([...allTypes(), "church", "config"]);
   let resolveInitial;
   const initialPromise = new Promise((resolve) => { resolveInitial = resolve; });
   const markReady = (key) => { waitingFor.delete(key); if (!waitingFor.size) { initialSnapshotsReady = true; resolveInitial(); } };
-  ["members", "donations", "expenses"].forEach((type) => {
+  const configUnsubscribe = firestoreApi.onSnapshot(
+    configRef(),
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const record = stripCloudFields(snapshot.data());
+        const hashes = readJson(HASH_KEY, {});
+        hashes["config/main"] = hash(record);
+        localStorage.setItem(HASH_KEY, JSON.stringify(hashes));
+        window.applyCloudSnapshot?.({ type: "config", record });
+      }
+      if (!snapshot.metadata.fromCache || !navigator.onLine) markReady("config");
+    },
+    () => { blocked.add("config"); markReady("config"); },
+  );
+  unsubscribers.push(configUnsubscribe);
+  allTypes().forEach((type) => {
     const unsubscribe = firestoreApi.onSnapshot(
       collectionRef(type),
       { includeMetadataChanges: true },
@@ -118,9 +145,13 @@ function startListeners() {
         localStorage.setItem(HASH_KEY, JSON.stringify(hashes));
         window.applyCloudSnapshot?.({ type, records, tombstones });
         if (!snapshot.metadata.fromCache || !navigator.onLine) markReady(type);
-        if (!syncing) setStatus(snapshot.metadata.fromCache ? "오프라인 자료 사용 중" : "온라인 동기화됨", snapshot.metadata.fromCache ? "" : "online");
+        if (!syncing) { if (snapshot.metadata.fromCache) setStatus("오프라인 자료 사용 중", ""); else setSyncedStatus(); }
       },
-      (error) => setStatus(error.code === "permission-denied" ? "접근 권한 확인 필요" : "동기화 오류", "error"),
+      (error) => {
+        if (CORE_TYPES.includes(type)) { setStatus(error.code === "permission-denied" ? "접근 권한 확인 필요" : "동기화 오류", "error"); return; }
+        console.warn(`'${type}' 자료를 동기화할 수 없습니다. Firestore 규칙을 확인해 주세요.`, error.code);
+        blocked.add(type); markReady(type);
+      },
     );
     unsubscribers.push(unsubscribe);
   });
@@ -164,35 +195,67 @@ async function syncAll() {
   const hashes = readJson(HASH_KEY, {});
   const nextHashes = { ...hashes };
   const pendingDeletes = readJson(DELETE_KEY, []);
-  const operations = [];
+  // 기본 자료는 한 묶음("core")으로, 확장 자료는 종류별 묶음으로 나눠 올립니다.
+  const buckets = new Map();
+  const bucketFor = (type) => {
+    const name = CORE_TYPES.includes(type) || type === "church" ? "core" : type;
+    if (!buckets.has(name)) buckets.set(name, { operations: [], hashes: {}, deletes: new Set() });
+    return buckets.get(name);
+  };
   try {
-    ["members", "donations", "expenses"].forEach((type) => {
+    allTypes().forEach((type) => {
+      if (blocked.has(type)) return;
       (localState[type] || []).forEach((source) => {
         const record = clone({ ...source, updatedAt: Number(source.updatedAt || 0) });
         const recordHash = hash(record);
         const key = `${type}/${record.id}`;
         if (hashes[key] === recordHash) return;
-        operations.push({ kind: "set", ref: documentRef(type, record.id), data: { ...record, _updatedBy: currentUser.uid } });
-        nextHashes[key] = recordHash;
+        const bucket = bucketFor(type);
+        bucket.operations.push({ kind: "set", ref: documentRef(type, record.id), data: { ...record, _updatedBy: currentUser.uid } });
+        bucket.hashes[key] = recordHash;
       });
     });
     pendingDeletes.forEach((deletion) => {
+      if (blocked.has(deletion.type)) return;
       const tombstone = { id: deletion.id, deletedAt: deletion.deletedAt, updatedAt: deletion.deletedAt, _updatedBy: currentUser.uid };
-      operations.push({ kind: "set", ref: documentRef(deletion.type, deletion.id), data: tombstone });
-      nextHashes[`${deletion.type}/${deletion.id}`] = hash(stripCloudFields(tombstone));
+      const bucket = bucketFor(deletion.type);
+      bucket.operations.push({ kind: "set", ref: documentRef(deletion.type, deletion.id), data: tombstone });
+      bucket.hashes[`${deletion.type}/${deletion.id}`] = hash(stripCloudFields(tombstone));
+      bucket.deletes.add(`${deletion.type}/${deletion.id}`);
     });
     const church = clone({ ...localState.church, updatedAt: Number(localState.church?.updatedAt || 0) });
     const churchHash = hash(church);
     if (hashes["church/profile"] !== churchHash) {
-      operations.push({ kind: "set", ref: firestoreApi.doc(db, "churches", cleanId(config.churchId), "settings", "profile"), data: { ...church, _updatedBy: currentUser.uid } });
-      nextHashes["church/profile"] = churchHash;
+      const bucket = bucketFor("church");
+      bucket.operations.push({ kind: "set", ref: firestoreApi.doc(db, "churches", cleanId(config.churchId), "settings", "profile"), data: { ...church, _updatedBy: currentUser.uid } });
+      bucket.hashes["church/profile"] = churchHash;
     }
-    if (!operations.length) { setStatus(navigator.onLine ? "온라인 동기화됨" : "오프라인 자료 사용 중", navigator.onLine ? "online" : ""); return; }
-    await commitOperations(operations);
+    if (!blocked.has("config") && localState.config) {
+      const settings = clone({ funds: localState.funds, incomeCategories: localState.incomeCategories, expenseCategories: localState.expenseCategories, ...localState.config, updatedAt: Number(localState.config.updatedAt || 0) });
+      const settingsHash = hash(settings);
+      if (hashes["config/main"] !== settingsHash) {
+        const bucket = bucketFor("config");
+        bucket.operations.push({ kind: "set", ref: configRef(), data: { ...settings, _updatedBy: currentUser.uid } });
+        bucket.hashes["config/main"] = settingsHash;
+      }
+    }
+    if (!buckets.size) { setSyncedStatus(); return; }
+    const finishedDeletes = new Set();
+    for (const [name, bucket] of buckets) {
+      try {
+        await commitOperations(bucket.operations);
+        if (navigator.onLine) { Object.assign(nextHashes, bucket.hashes); bucket.deletes.forEach((key) => finishedDeletes.add(key)); }
+      } catch (error) {
+        if (name === "core") throw error;
+        console.warn(`'${name}' 자료를 올리지 못했습니다.`, error.code || error);
+        if (error.code === "permission-denied") blocked.add(name);
+      }
+    }
     if (navigator.onLine) {
       localStorage.setItem(HASH_KEY, JSON.stringify(nextHashes));
-      localStorage.setItem(DELETE_KEY, "[]");
-      setStatus("온라인 동기화됨", "online");
+      // 그 사이 새로 예약된 삭제는 남겨 두고, 이번에 올린 삭제만 지웁니다.
+      localStorage.setItem(DELETE_KEY, JSON.stringify(readJson(DELETE_KEY, []).filter((item) => !finishedDeletes.has(`${item.type}/${item.id}`))));
+      setSyncedStatus();
     } else setStatus("오프라인 변경 보관됨", "");
   } catch (error) {
     console.error("Firebase sync failed", error);

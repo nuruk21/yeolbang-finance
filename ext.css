@@ -1,0 +1,111 @@
+/* 열방교회 확장 모듈 스타일 */
+.sidebar { padding-bottom: 16px; }
+.sidebar nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; align-content: start; margin: 0 -8px 12px; padding: 0 8px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent; }
+.sidebar .brand { padding-bottom: 18px; }
+.nav-group { border-top: 1px solid rgba(255,255,255,.08); }
+.nav-group summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; color: rgba(255,255,255,.55); font-size: 12.5px; font-weight: 800; letter-spacing: .04em; border-radius: 8px; }
+.nav-group summary::-webkit-details-marker { display: none; }
+.nav-group summary:hover { color: #fff; background: rgba(255,255,255,.05); }
+.nav-group summary em { font-style: normal; font-size: 10.5px; opacity: .6; }
+.nav-group summary::before { content: "▸"; margin-right: 6px; font-size: 10px; }
+.nav-group[open] summary::before { content: "▾"; }
+.nav-group summary { justify-content: flex-start; }
+.nav-group summary em { margin-left: auto; }
+.nav-group .nav-item { display: block; width: 100%; font-size: 14px; padding: 9px 14px 9px 22px; font-weight: 600; }
+.nav-group[open] { padding-bottom: 6px; }
+.church-mini { margin-top: 0; }
+
+.sticky-card { max-height: calc(100vh - 36px); overflow-y: auto; }
+.form-grid textarea { width: 100%; border: 1px solid var(--line); border-radius: 9px; background: #fbfcfc; padding: 11px 12px; outline: 0; color: var(--ink); font: inherit; font-size: 14px; resize: vertical; }
+.form-grid textarea:focus { border-color: #79a8bf; box-shadow: 0 0 0 3px rgba(40,119,168,.09); }
+
+.yb-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; margin-bottom: 16px; }
+.yb-toolbar label { display: grid; gap: 5px; font-size: 12px; font-weight: 750; color: #53626e; }
+.yb-toolbar input, .yb-toolbar select { border: 1px solid var(--line); border-radius: 9px; background: #fff; padding: 9px 11px; font-size: 14px; color: var(--ink); outline: 0; min-width: 120px; }
+.yb-toolbar input[type="number"] { min-width: 0; width: 96px; }
+.yb-toolbar input:focus, .yb-toolbar select:focus { border-color: #79a8bf; box-shadow: 0 0 0 3px rgba(40,119,168,.09); }
+.yb-toolbar .file-button input { min-width: 0; }
+.yb-spacer { flex: 1 1 auto; }
+.filter-row button, .yb-toolbar button { white-space: nowrap; flex: 0 0 auto; }
+.yb-summary { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.yb-crud-summary { justify-content: flex-start; margin-bottom: 12px; }
+.yb-note { margin: -6px 0 14px; line-height: 1.6; }
+.yb-note-box { background: #eef5f7; border-radius: 9px; padding: 10px 12px; font-size: 13px; color: var(--navy); }
+.yb-stack { display: grid; gap: 18px; }
+.yb-ul { margin: 0; padding-left: 20px; line-height: 1.9; font-size: 14px; color: #44535f; }
+.yb-link { font-size: 14px; font-weight: 750; padding: 0; }
+
+.yb-table tfoot th { background: #eef3f4; color: var(--ink); font-weight: 800; border-top: 2px solid var(--line); }
+.yb-table tr.yb-sub td { background: #f7f9fa; font-weight: 750; }
+.yb-table td { font-variant-numeric: tabular-nums; }
+.yb-table td:last-child .row-actions { display: inline-flex; gap: 2px; }
+
+.yb-sitemap-head { margin: 22px 0 10px; font-size: 13px; color: var(--blue); letter-spacing: .08em; }
+.yb-sitemap-head:first-child { margin-top: 0; }
+.yb-sitemap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.yb-sitemap-card { background: #fff; border: 1px dashed #c3d0d6; border-radius: 12px; padding: 18px 12px 16px; text-align: center; cursor: pointer; display: grid; gap: 7px; justify-items: center; min-height: 138px; align-content: start; font: inherit; color: var(--ink); }
+.yb-sitemap-card:hover { border-style: solid; border-color: var(--blue); box-shadow: var(--shadow); }
+.yb-sitemap-card i { font-style: normal; font-size: 26px; line-height: 1; color: var(--navy); }
+.yb-sitemap-card strong { font-size: 15px; }
+.yb-sitemap-card small { font-size: 12px; color: var(--coral); line-height: 1.45; }
+
+.yb-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.yb-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fbfcfc; }
+.yb-card span, .yb-card small { display: block; font-size: 12.5px; color: var(--muted); }
+.yb-card strong { display: block; font-size: 21px; margin: 7px 0 4px; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.yb-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin-bottom: 18px; }
+.yb-stat h4 { margin: 0 0 10px; font-size: 14px; }
+.yb-bars { display: grid; gap: 7px; margin-bottom: 14px; }
+.yb-bar-row { display: grid; grid-template-columns: 130px 1fr 74px; align-items: center; gap: 10px; font-size: 13px; }
+.yb-bar-row .progress { margin-top: 0; height: 9px; }
+.yb-bar-row .progress span { background: var(--blue); }
+.yb-bar-row b { text-align: right; font-variant-numeric: tabular-nums; }
+.yb-bar-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.yb-att-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.yb-att-chip { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 12px 6px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; color: var(--ink); }
+.yb-att-chip:hover { border-color: var(--blue); }
+.yb-att-chip.on { background: var(--green); border-color: var(--green); color: #fff; }
+.yb-cell { border: 0; background: transparent; width: 100%; font-size: 16px; cursor: pointer; color: #b8c4cb; padding: 2px; }
+.yb-cell.on { color: var(--green); }
+.yb-scan { width: 100%; font-size: 20px; padding: 16px 18px; border: 2px solid var(--blue); border-radius: 12px; outline: 0; margin-bottom: 12px; }
+.yb-scan-log { display: grid; gap: 6px; font-size: 14px; }
+.yb-scan-log div { padding: 9px 12px; border-radius: 8px; background: #edf6f0; color: #2f6b4b; }
+.yb-scan-log .bad { background: #fff0ec; color: #a84531; }
+
+.yb-calendar { table-layout: fixed; margin-bottom: 18px; }
+.yb-calendar th { text-align: center; }
+.yb-calendar td { height: 84px; vertical-align: top; border: 1px solid #edf1f3; padding: 6px; font-size: 12px; }
+.yb-calendar td.off { background: #fafbfb; }
+.yb-calendar td.today { background: #eef5f7; }
+.yb-calendar td b { display: block; margin-bottom: 3px; color: var(--muted); }
+.yb-calendar td:first-child b { color: var(--coral); }
+.yb-calendar td span { display: block; background: var(--sky); color: var(--navy); border-radius: 5px; padding: 2px 5px; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.yb-calendar td span.birth { background: #f7f3e8; color: #7b6b48; }
+.yb-cal-title { font-size: 16px; padding: 0 6px 8px; }
+
+.yb-cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; align-items: start; }
+.yb-cat-list { list-style: none; margin: 0 0 14px; padding: 0; }
+.yb-cat-list li { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #edf1f3; font-size: 14px; }
+.yb-cat-list em { font-style: normal; font-size: 11px; color: var(--muted); margin-left: 4px; }
+.yb-cat-grid .yb-toolbar { margin-bottom: 0; }
+.yb-cat-grid .yb-toolbar input { flex: 1; }
+
+#ybPrintArea { display: none; }
+.yb-doc .yb-approval { width: 46%; margin-left: auto; }
+.yb-doc .yb-approval td { height: 62px; }
+.yb-doc .receipt-table th { width: 22%; }
+.yb-doc .yb-approval th { width: auto; }
+
+@media (max-width: 1250px) { .yb-stat-grid { grid-template-columns: 1fr; } }
+@media print {
+  .view.active { display: block !important; }
+  .view .sticky-card, .view .yb-toolbar.no-print { display: none !important; }
+  .view .section-grid.form-layout { grid-template-columns: 1fr; }
+  .view .panel { border: 0; padding: 0; }
+  .table-wrap, .table-wrap.tall { overflow: visible; max-height: none; }
+  .yb-att-chip { border: 1px solid #999; }
+  .yb-att-chip.on { background: #ddd !important; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.yb-printing .app-shell { display: none !important; }
+  body.yb-printing #ybPrintArea { display: block !important; }
+}
